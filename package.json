@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start:dev": "npx nodemon",
     "dev": "next dev",
     "build": "npm run lint && next build",
     "lint": "next lint"
   },
+  "type": "module",
   "dependencies": {
     "express": "^4.21.2",
     "mongoose": "^8.9.3",
+    "morgan": "^1.10.0",
     "next": "15.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -18,6 +21,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -26,6 +30,9 @@
     "eslint-config-next": "15.1.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }
