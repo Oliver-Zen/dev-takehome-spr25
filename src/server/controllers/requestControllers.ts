@@ -117,3 +117,79 @@ export const updateRequest = async (
     });
   }
 };
+
+export const batchEditRequests = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { updates } = req.body;
+
+    if (!updates || !Array.isArray(updates) || updates.length === 0) {
+      res.status(RESPONSES.INVALID_INPUT.code).json({
+        message: RESPONSES.INVALID_INPUT.message,
+        error: "'updates' must be a non-empty array",
+      });
+      return;
+    }
+
+    const validStatuses = ["pending", "completed", "approved", "rejected"];
+
+    for (const update of updates) {
+      const { id, status } = update;
+
+      if (!id || !validStatuses.includes(status)) {
+        res.status(RESPONSES.INVALID_INPUT.code).json({
+          message: RESPONSES.INVALID_INPUT.message,
+          error: "Invalid update data. Ensure valid id and status.",
+        });
+        return;
+      }
+
+      await RequestModel.findByIdAndUpdate(
+        id,
+        { status, lastEditedDate: new Date() },
+        { new: true }
+      );
+    }
+
+    res.status(RESPONSES.SUCCESS.code).json({
+      message: RESPONSES.SUCCESS.message,
+      data: { updated: updates.length },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(RESPONSES.UNKNOWN_ERROR.code).json({
+      message: RESPONSES.UNKNOWN_ERROR.message,
+    });
+  }
+};
+
+export const batchDeleteRequests = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { deletions } = req.body;
+
+    if (!deletions || !Array.isArray(deletions) || deletions.length === 0) {
+      res.status(RESPONSES.INVALID_INPUT.code).json({
+        message: RESPONSES.INVALID_INPUT.message,
+        error: "'deletions' must be a non-empty array",
+      });
+      return;
+    }
+
+    await RequestModel.deleteMany({ _id: { $in: deletions } });
+
+    res.status(RESPONSES.SUCCESS.code).json({
+      message: RESPONSES.SUCCESS.message,
+      data: { deleted: deletions.length },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(RESPONSES.UNKNOWN_ERROR.code).json({
+      message: RESPONSES.UNKNOWN_ERROR.message,
+    });
+  }
+};
