@@ -29,6 +29,7 @@ export const createRequest = async (
 export const getRequests = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string, 10);
+    const status = req.query.status as string;
 
     if (isNaN(page) || page < 1) {
       res.status(RESPONSES.INVALID_INPUT.code).json({
@@ -39,7 +40,12 @@ export const getRequests = async (req: Request, res: Response) => {
       return;
     }
 
-    const reqs = await RequestModel.find()
+    const filter: Partial<{ status: string }> = {};
+    if (status) {
+      filter.status = status;
+    }
+
+    const reqs = await RequestModel.find(filter)
       .limit(PAGINATION_PAGE_SIZE)
       .skip(PAGINATION_PAGE_SIZE * (page - 1))
       .sort("-createdDate");
@@ -47,6 +53,7 @@ export const getRequests = async (req: Request, res: Response) => {
     res.status(RESPONSES.SUCCESS.code).json({
       message: RESPONSES.SUCCESS.message,
       data: {
+        total: reqs.length,
         reqs: reqs,
       },
     });
@@ -57,3 +64,20 @@ export const getRequests = async (req: Request, res: Response) => {
     });
   }
 };
+
+//     const reqs = await RequestModel.find(filter)
+//       .limit(PAGINATION_PAGE_SIZE)
+//       .skip(PAGINATION_PAGE_SIZE * (page - 1))
+//       .sort("-createdDate");
+
+//     res.status(RESPONSES.SUCCESS.code).json({
+//       message: RESPONSES.SUCCESS.message,
+//       data: { reqs },
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(RESPONSES.INVALID_INPUT.code).json({
+//       message: RESPONSES.INVALID_INPUT.message,
+//     });
+//   }
+// };
