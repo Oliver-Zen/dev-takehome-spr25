@@ -1,5 +1,48 @@
 # Back-End 🍑
 
+## Summary of My Work
+
+I have meet minimum, main, and "above and beyond" requirements.
+
+- Minimum Requirements
+    - Use `mongoose` to define the model schema
+    - Connect to local mongoDB database to setup
+    - Implement `PUT /api/request`
+    - Implement `GET /api/request?page=_`
+- Main Requirements
+    - Implement `GET /api/request?status=_`
+    - Implement `PATCH /api/request`
+- Above and Beyond
+    - Implement `/api/requests/edit` for batch editting
+    - HTTP request body example:
+        ```
+        {
+          "updates": [
+            { "id": "request1_id", "status": "approved" },
+            { "id": "request2_id", "status": "completed" }
+          ]
+        }
+        ```
+    - Implement `/api/requests` for batch deleting
+    - HTTP request body example:
+        ```
+        {
+          "deletions": ["request3_id", "request4_id"]
+        }
+
+### Start the Server
+
+- Create local mongoDB database as `mongodb://localhost:27017/crisis-corner`
+- Create a `Request` collection in it
+- Run `npm run start:dev` to start the server
+
+### Future Work Could be Done 
+
+- Use `dotenv` to manage environment variables
+- Divide `server.ts` into `server.ts` and `app.ts` for better readability
+- Create middleware(s) to handle input validation and so on
+- Unit tests for each APIs
+
 ## Necessary Information
 
 This is the information the non-profit has given you about what they want to store:
