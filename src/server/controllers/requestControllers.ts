@@ -26,7 +26,10 @@ export const createRequest = async (
   }
 };
 
-export const getRequests = async (req: Request, res: Response) => {
+export const getRequests = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const page = parseInt(req.query.page as string, 10);
     const status = req.query.status as string;
@@ -65,19 +68,52 @@ export const getRequests = async (req: Request, res: Response) => {
   }
 };
 
-//     const reqs = await RequestModel.find(filter)
-//       .limit(PAGINATION_PAGE_SIZE)
-//       .skip(PAGINATION_PAGE_SIZE * (page - 1))
-//       .sort("-createdDate");
+export const updateRequest = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id, status } = req.body;
 
-//     res.status(RESPONSES.SUCCESS.code).json({
-//       message: RESPONSES.SUCCESS.message,
-//       data: { reqs },
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(RESPONSES.INVALID_INPUT.code).json({
-//       message: RESPONSES.INVALID_INPUT.message,
-//     });
-//   }
-// };
+    if (!id || !status) {
+      res.status(RESPONSES.INVALID_INPUT.code).json({
+        message: RESPONSES.INVALID_INPUT.message,
+        error: "Both id and status are required",
+      });
+      return;
+    }
+
+    const validStatuses = ["pending", "completed", "approved", "rejected"];
+    if (!validStatuses.includes(status)) {
+      res.status(RESPONSES.INVALID_INPUT.code).json({
+        message: RESPONSES.INVALID_INPUT.message,
+        error: `Invalid status. Must be one of: ${validStatuses.join(", ")}`,
+      });
+      return;
+    }
+
+    const updatedRequest = await RequestModel.findByIdAndUpdate(
+      id,
+      { status, lastEditedDate: new Date() }, // Update status and last edited date
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedRequest) {
+      res.status(RESPONSES.INVALID_INPUT.code).json({
+        message: RESPONSES.INVALID_INPUT.message,
+        error: "Request not found",
+      });
+      return;
+    }
+
+    res.status(RESPONSES.SUCCESS.code).json({
+      message: "successfully updated",
+      data: { updatedRequest },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(RESPONSES.UNKNOWN_ERROR.code).json({
+      message: RESPONSES.UNKNOWN_ERROR.message,
+    });
+  }
+};
